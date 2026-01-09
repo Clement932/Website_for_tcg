@@ -8,68 +8,98 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div id="stats-container">
-        <div class="stat-card booster-card">
-            <div class="stat-icon">📦</div>
-            <div class="stat-info">
-                <span class="stat-label">Boosters Ouverts</span>
-                <span class="stat-value" id="booster-count">0</span>
+    
+    <nav class="main-nav">
+        <div class="nav-logo">TCG POCKET</div>
+        <div class="nav-links">
+            <button onclick="goHome()" class="nav-btn active"><i class="fas fa-layer-group"></i> Extensions</button>
+            <button onclick="openGlobalCollection()" class="nav-btn"><i class="fas fa-globe"></i> Collection Totale</button>
+            <button onclick="openShop()" class="nav-btn"><i class="fas fa-store"></i> Boutique</button>
+        </div>
+        <div class="nav-currency" title="Poussière d'étoile (Vends tes doublons !)">
+            <i class="fas fa-gem"></i> <span id="currency-display">0</span>
+        </div>
+    </nav>
+
+    <div class="dashboard-stats">
+        <div class="stat-item">
+            <i class="fas fa-box-open"></i>
+            <div class="stat-text">
+                <span class="label">Boosters</span>
+                <span class="value" id="booster-count">0</span>
             </div>
         </div>
-        <div class="stat-card collection-card">
-            <div class="stat-icon">🃏</div>
-            <div class="stat-info">
-                <span class="stat-label">Collection Totale</span>
-                <div class="stat-value-group">
-                    <span class="stat-value" id="collection-count">0</span>
-                    <span class="stat-separator">/</span>
-                    <span class="stat-total" id="total-cards-count">0</span>
-                </div>
+        <div class="stat-item">
+            <i class="fas fa-clone"></i>
+            <div class="stat-text">
+                <span class="label">Cartes</span>
+                <span class="value">
+                    <span id="collection-count">0</span> / <span id="total-cards-count">0</span>
+                </span>
             </div>
+        </div>
+        <div class="stat-actions">
+            <button onclick="resetCollection()" class="reset-btn" title="Tout effacer">
+                <i class="fas fa-trash"></i> Reset
+            </button>
         </div>
     </div>
-    
-    <header>
-        <div class="header-content">
-            <h1>Mes Extensions</h1>
-            <div class="stats">
-                <span>Total Cartes: <b id="total-collected">0</b></span>
-                <button onclick="resetCollection()" class="reset-btn" title="Tout effacer">
-                    <i class="fas fa-trash"></i> Reset
-                </button>
-            </div>
-        </div>
-    </header>
 
     <main>
-        <div id="sets-container" class="sets-grid"></div>
+        <div id="sets-container" class="sets-grid view-section"></div>
 
-        <div id="set-detail-view" class="hidden">
+        <div id="set-detail-view" class="hidden view-section">
             <div class="detail-header">
                 <button class="back-btn" onclick="goHome()"><i class="fas fa-arrow-left"></i> Retour</button>
                 <h2 id="current-set-title">Nom de l'extension</h2>
             </div>
-            
-            <div class="actions">
-                <button class="action-btn open" onclick="initBoosterOpening()">
-                    <i class="fas fa-bolt"></i> Ouvrir Booster
-                </button>
-                <div class="view-toggles">
-                    <button onclick="filterView('all')" class="active">Tout</button>
-                    <button onclick="filterView('owned')">Possédées</button>
-                    <button onclick="filterView('missing')">Manquantes</button>
+
+            <div class="set-content-wrapper">
+                
+                <aside class="set-sidebar">
+                    <h3 style="margin-top:0; font-size:1.1em;">Raretés du Set</h3>
+                    <ul id="dynamic-legend" class="legend-list">
+                        </ul>
+                </aside>
+
+                <div class="set-main-area">
+                    <div class="actions">
+                        <button class="action-btn open" onclick="initBoosterOpening()">
+                            <i class="fas fa-bolt"></i> Ouvrir Booster
+                        </button>
+                        <div class="view-toggles">
+                            <button onclick="filterView('all')" class="active filter-btn" data-filter="all">Tout</button>
+                            <button onclick="filterView('owned')" class="filter-btn" data-filter="owned">Possédées</button>
+                            <button onclick="filterView('missing')" class="filter-btn" data-filter="missing">Manquantes</button>
+                        </div>
+                    </div>
+                    <div id="cards-grid" class="cards-grid"></div>
                 </div>
             </div>
+        </div>
 
-            <div id="cards-grid" class="cards-grid"></div>
+        <div id="global-collection-view" class="hidden view-section">
+            <div class="detail-header">
+                <h2>Collection Globale (Triée par Rareté)</h2>
+                <button class="action-btn secondary" onclick="sellDuplicates()">
+                    <i class="fas fa-coins"></i> Vendre les doublons (+<span id="sell-preview">0</span>)
+                </button>
+            </div>
+            <div id="global-grid" class="cards-grid"></div>
+        </div>
+
+        <div id="shop-view" class="hidden view-section">
+            <div class="detail-header">
+                <h2>Boutique de Cartes</h2>
+                <p>Utilise ta poussière d'étoile pour créer les cartes manquantes.</p>
+            </div>
+            <div id="shop-grid" class="cards-grid"></div>
         </div>
 
         <div id="booster-scene-overlay" class="hidden">
-            
             <div id="pack-container" class="pack-container">
                 <div class="glow-effect"></div>
-                <img id="pack-visual" src="" class="pack-image">
-                </div>
+                <img id="pack-visual" src="" class="pack-image"> </div>
 
             <div id="opened-cards-container" class="opened-cards-container hidden"></div>
 

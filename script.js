@@ -1,6 +1,5 @@
-// --- CONFIGURATION ET SAUVEGARDE ---
+// --- CONFIGURATION ---
 
-// DEFINITION DES PROBABILITÉS
 const DROP_RATES_SLOT_4 = [
     { rarity: "2_diamond", weight: 90000 },
     { rarity: "3_diamond", weight: 5000 },
@@ -8,9 +7,9 @@ const DROP_RATES_SLOT_4 = [
     { rarity: "1_star",    weight: 2572 },
     { rarity: "2_star",    weight: 500 },
     { rarity: "3_star",    weight: 222 },
-    { rarity: "crown",     weight: 40 },
-    { rarity: "promo_a", weight: 300 },
-    { rarity: "promo_b", weight: 200 },
+    { rarity: "1_chrom",   weight: 100 },
+    { rarity: "2_chrom",   weight: 50 },
+    { rarity: "crown",     weight: 40 }
 ];
 
 const DROP_RATES_SLOT_5 = [
@@ -20,29 +19,55 @@ const DROP_RATES_SLOT_5 = [
     { rarity: "1_star",    weight: 10288 },
     { rarity: "2_star",    weight: 2000 },
     { rarity: "3_star",    weight: 888 },
-    { rarity: "crown",     weight: 160 },
-    { rarity: "promo_a", weight: 600 },
-    { rarity: "promo_b", weight: 400 },
+    { rarity: "1_chrom",  weight: 400 },
+    { rarity: "2_chrom",  weight: 200 },
+    { rarity: "crown",     weight: 160 }
 ];
 
+const DROP_RATES_GOD_PACK = [
+    { rarity: "1_star",    weight: 600 },
+    { rarity: "2_star",    weight: 200 },
+    { rarity: "3_star",    weight: 100 },
+    { rarity: "1_chrom",   weight: 50 },
+    { rarity: "2_chrom",   weight: 25 },
+    { rarity: "crown",     weight: 25 }
+];
+
+// Configuration des Raretés (Rank pour le tri, Cost pour la boutique)
 const RARITY_DATA = {
-    "crown":      { symbol: "👑", label: "Gold Rare", rank: 10, css: "rarity-crown", group: "crown" },
-    "2_chrom":    { symbol: "✨✨", label: "Chromatique Rare", rank: 9, css: "rarity-2_chrom", group: "chrom" },
-    "1_chrom":    { symbol: "✨", label: "Chromatique", rank: 8, css: "rarity-1_chrom", group: "chrom" },
-    "3_star":     { symbol: "⭐⭐⭐", label: "Immersive Rare", rank: 7, css: "rarity-3_star", group: "star" },
-    "2_star":     { symbol: "⭐⭐", label: "Super Rare (Full Art)", rank: 6, css: "rarity-2_star", group: "star" },
-    "1_star":     { symbol: "⭐", label: "Illustration Rare", rank: 5, css: "rarity-1_star", group: "star" },
-    "4_diamond":  { symbol: "♦♦♦♦", label: "Ultra Rare (ex)", rank: 4, css: "rarity-4_diamond", group: "diamond" },
-    "3_diamond":  { symbol: "♦♦♦", label: "Rare", rank: 3, css: "rarity-diamond", group: "diamond" },
-    "2_diamond":  { symbol: "♦♦", label: "Peu Commune", rank: 2, css: "rarity-diamond", group: "diamond" },
-    "1_diamond":  { symbol: "♦", label: "Commune", rank: 1, css: "rarity-common", group: "diamond" },
-    "promo":      { symbol: "P", label: "Promo", rank: 0, css: "rarity-common", group: "diamond" },
-    "promo_a": { symbol: "PA", label: "Promo A", rank: 0, css: "rarity-common", group: "promo" },
-    "promo_b": { symbol: "PB", label: "Promo B", rank: 0, css: "rarity-common", group: "promo" }
+    "crown":      { symbol: "👑", label: "Gold Rare", rank: 11, css: "rarity-crown", group: "crown", cost: 2500, sell: 500 },
+    "2_chrom":    { symbol: "✨✨", label: "Chromatique Rare", rank: 10, css: "rarity-chrom", group: "chrom", cost: 1500, sell: 300 },
+    "1_chrom":    { symbol: "✨", label: "Chromatique", rank: 9, css: "rarity-chrom", group: "chrom", cost: 1000, sell: 200 },
+    "3_star":     { symbol: "⭐⭐⭐", label: "Immersive Rare", rank: 8, css: "rarity-star", group: "star", cost: 800, sell: 150 },
+    "2_star":     { symbol: "⭐⭐", label: "Full Art", rank: 7, css: "rarity-star", group: "star", cost: 500, sell: 100 },
+    "1_star":     { symbol: "⭐", label: "Illustration Rare", rank: 6, css: "rarity-star", group: "star", cost: 300, sell: 50 },
+    "4_diamond":  { symbol: "♦♦♦♦", label: "ex", rank: 5, css: "rarity-diamond", group: "diamond", cost: 150, sell: 25 },
+    "3_diamond":  { symbol: "♦♦♦", label: "Rare", rank: 4, css: "rarity-diamond", group: "diamond", cost: 70, sell: 10 },
+    "2_diamond":  { symbol: "♦♦", label: "Peu Commune", rank: 3, css: "rarity-diamond", group: "diamond", cost: 35, sell: 5 },
+    "1_diamond":  { symbol: "♦", label: "Commune", rank: 2, css: "rarity-diamond", group: "diamond", cost: 15, sell: 2 },
+    "promo":      { symbol: "P", label: "Promo", rank: 1, css: "rarity-diamond", group: "diamond", cost: 500, sell: 0 }
 };
 
+// State
 let boosterOpenedCount = parseInt(localStorage.getItem('tcg_pocket_booster_count')) || 0;
-let userCollection = JSON.parse(localStorage.getItem('tcg_pocket_save')) || {};
+let userCurrency = parseInt(localStorage.getItem('tcg_pocket_currency')) || 0;
+// Structure : { "nom-set": { "1.png": 2, "2.png": 1 } }
+let userCollection = JSON.parse(localStorage.getItem('tcg_pocket_collection_v2')) || {}; 
+
+// Migration ancienne sauvegarde (tableau vers objets) si nécessaire
+const oldSave = localStorage.getItem('tcg_pocket_save');
+if (oldSave && Object.keys(userCollection).length === 0) {
+    const parsedOld = JSON.parse(oldSave);
+    Object.keys(parsedOld).forEach(set => {
+        userCollection[set] = {};
+        parsedOld[set].forEach(id => {
+            userCollection[set][id] = (userCollection[set][id] || 0) + 1;
+        });
+    });
+    localStorage.removeItem('tcg_pocket_save');
+    saveData();
+}
+
 let currentSet = null;
 let currentFilter = 'all';
 
@@ -51,57 +76,108 @@ document.addEventListener('DOMContentLoaded', () => {
     renderHome();
 });
 
+function saveData() {
+    localStorage.setItem('tcg_pocket_collection_v2', JSON.stringify(userCollection));
+    localStorage.setItem('tcg_pocket_booster_count', boosterOpenedCount);
+    localStorage.setItem('tcg_pocket_currency', userCurrency);
+    updateUI();
+}
+
 function updateUI() {
     let totalCollected = 0;
     let totalCardsInGame = 0;
-    if (typeof CARDS_DB !== 'undefined') {
-        for (const ext in CARDS_DB) {
-            totalCardsInGame += CARDS_DB[ext].length;
-            if (userCollection[ext]) {
-                totalCollected += new Set(userCollection[ext]).size;
-            }
+    let duplicateValue = 0;
+
+    for (const ext in CARDS_DB) {
+        totalCardsInGame += CARDS_DB[ext].length;
+        if (userCollection[ext]) {
+            // Compte les cartes uniques
+            totalCollected += Object.keys(userCollection[ext]).length;
+            
+            // Calcul valeur doublons
+            Object.entries(userCollection[ext]).forEach(([id, qty]) => {
+                if(qty > 1) {
+                    const card = CARDS_DB[ext].find(c => c.id === id);
+                    if(card) {
+                        const rInfo = RARITY_DATA[card.rarity] || RARITY_DATA["1_diamond"];
+                        duplicateValue += (qty - 1) * rInfo.sell;
+                    }
+                }
+            });
         }
     }
+
     const elBooster = document.getElementById('booster-count');
     const elCol = document.getElementById('collection-count');
     const elTot = document.getElementById('total-cards-count');
-    const elHeadTot = document.getElementById('total-collected');
+    const elCurr = document.getElementById('currency-display');
+    const elPrev = document.getElementById('sell-preview');
 
     if(elBooster) elBooster.textContent = boosterOpenedCount;
     if(elCol) elCol.textContent = totalCollected;
     if(elTot) elTot.textContent = totalCardsInGame;
-    if(elHeadTot) elHeadTot.textContent = totalCollected;
+    if(elCurr) elCurr.textContent = userCurrency;
+    if(elPrev) elPrev.textContent = duplicateValue;
 }
 
 function resetCollection() {
     if (confirm("Attention : Voulez-vous vraiment TOUT effacer ?")) {
-        localStorage.removeItem('tcg_pocket_save');
-        localStorage.removeItem('tcg_pocket_booster_count'); 
-        userCollection = {};
-        boosterOpenedCount = 0; 
-        updateUI(); 
-        if(currentSet) renderCards('all');
-        else renderHome();
+        localStorage.clear();
+        location.reload();
     }
 }
 
-// --- NAVIGATION ---
+// --- NAVIGATION & VUES ---
+
+function hideAllViews() {
+    document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+}
+
+function goHome() {
+    hideAllViews();
+    document.getElementById('sets-container').classList.remove('hidden');
+    document.querySelector('button[onclick="goHome()"]').classList.add('active');
+    renderHome();
+}
+
+function openGlobalCollection() {
+    hideAllViews();
+    document.getElementById('global-collection-view').classList.remove('hidden');
+    document.querySelector('button[onclick="openGlobalCollection()"]').classList.add('active');
+    renderGlobalCollection();
+}
+
+function openShop() {
+    hideAllViews();
+    document.getElementById('shop-view').classList.remove('hidden');
+    document.querySelector('button[onclick="openShop()"]').classList.add('active');
+    renderShop();
+}
+
+function formatName(str) { return str.replace(/-/g, ' ').toUpperCase(); }
+
+// --- RENDER HOME (SETS) ---
 function renderHome() {
     const container = document.getElementById('sets-container');
-    if(!container) return;
     container.innerHTML = '';
     
     Object.keys(CARDS_DB).forEach(setName => {
         const totalCards = CARDS_DB[setName].length;
-        const ownedCards = userCollection[setName] ? new Set(userCollection[setName]).size : 0;
-        const percent = Math.round((ownedCards / totalCards) * 100);
+        const userSet = userCollection[setName] || {};
+        const ownedCards = Object.keys(userSet).length;
         
+        // Calcul pourcentage : 100% seulement si TOUT est là
+        let percent = (ownedCards / totalCards) * 100;
+        if (percent > 99 && percent < 100) percent = 99; // Eviter faux 100%
+        percent = Math.floor(percent); 
+
         const setDiv = document.createElement('div');
         setDiv.className = 'set-card';
         setDiv.onclick = () => openSetView(setName);
 
         setDiv.innerHTML = `
-            <img src="covers/${setName}.webp" class="set-cover" onerror="this.src='https://via.placeholder.com/300?text=No+Cover'">
+            <img src="covers/${setName}.webp" class="set-cover" onerror="this.src='https://via.placeholder.com/300?text=Cover'">
             <div class="set-info">
                 <span class="set-name">${formatName(setName)}</span>
                 <div class="set-stats"><span>${ownedCards}/${totalCards}</span><span>${percent}%</span></div>
@@ -112,202 +188,110 @@ function renderHome() {
     });
 }
 
-function formatName(str) { return str.replace(/-/g, ' ').toUpperCase(); }
-
 function openSetView(setName) {
+    hideAllViews();
     currentSet = setName;
     currentFilter = 'all';
-    document.getElementById('sets-container').classList.add('hidden');
     document.getElementById('set-detail-view').classList.remove('hidden');
     document.getElementById('current-set-title').innerText = formatName(setName);
+    renderDynamicLegend(setName);
+    // Reset filters visual
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`[data-filter="all"]`).classList.add('active');
     
-    document.querySelectorAll('.view-toggles button').forEach(b => b.classList.remove('active'));
-    document.querySelector(`.view-toggles button[onclick="filterView('all')"]`).classList.add('active');
     renderCards('all');
 }
 
-function goHome() {
-    document.getElementById('set-detail-view').classList.add('hidden');
-    document.getElementById('sets-container').classList.remove('hidden');
-    renderHome();
+function filterView(type) {
+    currentFilter = type;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`[data-filter="${type}"]`).classList.add('active');
+    renderCards(type);
 }
 
-// --- LOGIQUE D'OUVERTURE AUTOMATIQUE & RAPIDE ---
-let tempDrawnCards = []; 
 
-// --- LOGIQUE D'OUVERTURE RAPIDE ---
-function initBoosterOpening() {
-    const overlay = document.getElementById('booster-scene-overlay');
-    const packContainer = document.getElementById('pack-container');
-    const cardsContainer = document.getElementById('opened-cards-container');
-    const buttons = document.getElementById('scene-buttons');
 
-    // 1. Cacher le booster immédiatement et préparer l'interface
-    packContainer.style.display = 'none'; 
-    cardsContainer.classList.remove('hidden');
-    buttons.classList.add('hidden');
-    
-    // 2. Tirage des cartes selon les taux de drop
-    tempDrawnCards = drawBoosterPack(); 
-    
-    boosterOpenedCount++;
-    localStorage.setItem('tcg_pocket_booster_count', boosterOpenedCount);
-    updateUI();
+function renderDynamicLegend(setName) {
+    const legendContainer = document.getElementById('dynamic-legend');
+    legendContainer.innerHTML = ''; // Nettoyer l'ancienne légende
 
-    // 3. Affichage et lancement immédiat de la révélation des cartes
-    overlay.classList.remove('hidden');
-    prepareCardsForReveal();
-}
+    if (!CARDS_DB[setName]) return;
 
-function prepareCardsForReveal() {
-    const container = document.getElementById('opened-cards-container');
-    container.innerHTML = ''; 
+    // 1. Trouver les raretés uniques dans ce set
+    const uniqueRarities = [...new Set(CARDS_DB[setName].map(c => c.rarity))];
 
-    tempDrawnCards.forEach((cardObj) => {
-        const rarityInfo = RARITY_DATA[cardObj.rarity] || RARITY_DATA["1_diamond"];
+    // 2. Les trier par Rang (Crown en haut, 1 Diamond en bas)
+    uniqueRarities.sort((a, b) => {
+        return (RARITY_DATA[b]?.rank || 0) - (RARITY_DATA[a]?.rank || 0);
+    });
+
+    // 3. Créer le HTML
+    uniqueRarities.forEach(rarityKey => {
+        const data = RARITY_DATA[rarityKey];
+        if (!data) return;
+
+        // On récupère la couleur via la variable CSS définie à l'étape 1
+        // Astuce: On utilise le nom de la variable CSS dynamiquement
+        const cssVarName = `--c-${rarityKey}`; 
         
-        let glowClass = '';
-        if (rarityInfo.group === 'crown') glowClass = 'glow-crown';
-        else if (rarityInfo.group === 'chrom') glowClass = 'glow-chrom';
-        else if (rarityInfo.group === 'star') glowClass = 'glow-star';
-        else if (rarityInfo.group === 'diamond') glowClass = 'glow-diamond';
-
-        const scene = document.createElement('div');
-        // L'aura est mise sur la scène pour être visible devant et derrière
-        scene.className = `card-scene ${glowClass}`; 
-        
-        scene.innerHTML = `
-            <div class="card-object">
-                <div class="card-face face-back"></div>
-                <div class="card-face face-front">
-                    <img src="img/${currentSet}/${cardObj.id}">
-                </div>
-            </div>
+        const li = document.createElement('li');
+        li.className = 'legend-item';
+        li.innerHTML = `
+            <span class="legend-dot" style="background: var(${cssVarName}); box-shadow: 0 0 5px var(${cssVarName});"></span>
+            <span>${data.label}</span>
+            <span style="margin-left:auto; opacity:0.5">${data.symbol}</span>
         `;
-        container.appendChild(scene);
+        legendContainer.appendChild(li);
     });
-
-    // Retournement automatique instantané après un micro-délai
-    setTimeout(() => {
-        const allScenes = container.querySelectorAll('.card-scene');
-        allScenes.forEach(scene => scene.classList.add('is-flipped'));
-        document.getElementById('scene-buttons').classList.remove('hidden');
-    }, 50);
 }
 
-function closeBoosterScene() {
-    document.getElementById('booster-scene-overlay').classList.add('hidden');
-    renderCards(currentFilter);
-}
 
-function replayBooster() {
-    initBoosterOpening();
-}
 
-// --- ALGORITHME DE DROP ---
-function drawBoosterPack() {
-    const setCards = CARDS_DB[currentSet];
-    const drawn = [];
-    if(!userCollection[currentSet]) userCollection[currentSet] = [];
-
-    const cardsByRarity = {};
-    setCards.forEach(card => {
-        if (!cardsByRarity[card.rarity]) cardsByRarity[card.rarity] = [];
-        cardsByRarity[card.rarity].push(card);
-    });
-
-    for(let i=0; i<3; i++) {
-        drawn.push(pickRandomCardFromRarity("1_diamond", cardsByRarity));
-    }
-
-    const rarity4 = pickRarityFromTable(DROP_RATES_SLOT_4);
-    drawn.push(pickRandomCardFromRarity(rarity4, cardsByRarity));
-
-    const rarity5 = pickRarityFromTable(DROP_RATES_SLOT_5);
-    drawn.push(pickRandomCardFromRarity(rarity5, cardsByRarity));
-
-    drawn.forEach(c => userCollection[currentSet].push(c.id));
-    localStorage.setItem('tcg_pocket_save', JSON.stringify(userCollection));
-    
-    return drawn;
-}
-
-function pickRarityFromTable(table) {
-    let totalWeight = 0;
-    table.forEach(entry => totalWeight += entry.weight);
-    let randomVal = Math.random() * totalWeight;
-    for (const entry of table) {
-        if (randomVal < entry.weight) {
-            return entry.rarity;
-        }
-        randomVal -= entry.weight;
-    }
-    return table[0].rarity; 
-}
-
-function pickRandomCardFromRarity(rarityTarget, cardsMap) {
-    if (cardsMap[rarityTarget] && cardsMap[rarityTarget].length > 0) {
-        const pool = cardsMap[rarityTarget];
-        return pool[Math.floor(Math.random() * pool.length)];
-    }
-    const fallbackOrder = [
-    "promo_a",
-    "promo_b",
-    "promo",
-    "crown",
-    "3_star",
-    "2_star",
-    "1_star",
-    "4_diamond",
-    "3_diamond",
-    "2_diamond",
-    "1_diamond"
-];
-    let currentIndex = fallbackOrder.indexOf(rarityTarget);
-    for(let i = currentIndex + 1; i < fallbackOrder.length; i++) {
-        const nextRarity = fallbackOrder[i];
-        if (cardsMap[nextRarity] && cardsMap[nextRarity].length > 0) {
-            const pool = cardsMap[nextRarity];
-            return pool[Math.floor(Math.random() * pool.length)];
-        }
-    }
-    return { id: "error.png", rarity: "1_diamond" };
-}
-
+// --- RENDER CARDS (SET VIEW) ---
 function renderCards(filter) {
     const grid = document.getElementById('cards-grid');
     grid.innerHTML = '';
     
-    let allCards = [...CARDS_DB[currentSet]]; 
+    if(!currentSet) return;
 
+    let allCards = [...CARDS_DB[currentSet]]; 
+    
+    // Tri par ID
     allCards.sort((a, b) => {
         const numA = parseInt(a.id.match(/\d+/)[0]);
         const numB = parseInt(b.id.match(/\d+/)[0]);
         return numA - numB;
     });
 
-    const userCards = userCollection[currentSet] || [];
+    const userSet = userCollection[currentSet] || {};
 
     allCards.forEach(cardObj => {
         const filename = cardObj.id;
-        const rarityKey = cardObj.rarity;
-        const isOwned = userCards.includes(filename);
+        const qty = userSet[filename] || 0;
+        const isOwned = qty > 0;
         
         if (filter === 'owned' && !isOwned) return;
         if (filter === 'missing' && isOwned) return;
 
-        const rInfo = RARITY_DATA[rarityKey] || RARITY_DATA["1_diamond"];
+        const rInfo = RARITY_DATA[cardObj.rarity] || RARITY_DATA["1_diamond"];
         const rawNum = parseInt(filename.match(/\d+/)[0]);
         const formattedNum = "#" + rawNum.toString().padStart(3, '0');
-
         const cardDiv = document.createElement('div');
-        cardDiv.className = `card-item ${isOwned ? '' : 'missing'}`;
+
+        const specificAuraClass = `aura-${cardObj.rarity}`;
+        cardDiv.className = `card-item ${isOwned ? '' : 'missing'} ${specificAuraClass}`;
         
+        let qtyBadge = '';
+        if(qty > 1) {
+            qtyBadge = `<span class="card-qty">x${qty}</span>`;
+        }
+
         cardDiv.innerHTML = `
+            ${qtyBadge}
             <img src="img/${currentSet}/${filename}" loading="lazy" alt="${filename}">
             <span class="card-number">${formattedNum}</span>
             <div class="card-info">
-                <div class="rarity-symbol ${rInfo.css || ''}" title="${rInfo.label}">
+                <div class="rarity-symbol ${rInfo.css}" title="${rInfo.label}">
                     ${rInfo.symbol}
                 </div>
             </div>
@@ -320,10 +304,302 @@ function renderCards(filter) {
     });
 }
 
-function filterView(type) {
-    currentFilter = type;
-    document.querySelectorAll('.view-toggles button').forEach(b => b.classList.remove('active'));
-    const activeBtn = document.querySelector(`.view-toggles button[onclick="filterView('${type}')"]`);
-    if(activeBtn) activeBtn.classList.add('active');
+// --- GLOBAL COLLECTION (BY RARITY) ---
+function renderGlobalCollection() {
+    const grid = document.getElementById('global-grid');
+    grid.innerHTML = '';
+
+    // 1. Récupérer toutes les cartes de toutes les extensions
+    let allGlobalCards = [];
+    Object.keys(CARDS_DB).forEach(setName => {
+        CARDS_DB[setName].forEach(card => {
+            allGlobalCards.push({
+                ...card,
+                setName: setName,
+                qty: (userCollection[setName] && userCollection[setName][card.id]) || 0
+            });
+        });
+    });
+
+    // 2. Trier par Rareté (Rank) puis par Extension
+    allGlobalCards.sort((a, b) => {
+        const rankA = RARITY_DATA[a.rarity]?.rank || 0;
+        const rankB = RARITY_DATA[b.rarity]?.rank || 0;
+        
+        if (rankA !== rankB) return rankA - rankB; // Ordre Croissant (1 Dia -> Crown)
+        return a.setName.localeCompare(b.setName);
+    });
+
+    // 3. Afficher
+    allGlobalCards.forEach(card => {
+        // Optionnel : N'afficher que les possédées ? 
+        // L'utilisateur a demandé "on voit toutes les cartes", donc on affiche aussi les grisées.
+        
+        const rInfo = RARITY_DATA[card.rarity] || RARITY_DATA["1_diamond"];
+        const isOwned = card.qty > 0;
+
+        const div = document.createElement('div');
+        div.className = `card-item ${isOwned ? '' : 'missing'}`;
+        
+        let qtyBadge = card.qty > 1 ? `<span class="card-qty">x${card.qty}</span>` : '';
+
+        div.innerHTML = `
+            ${qtyBadge}
+            <img src="img/${card.setName}/${card.id}" loading="lazy">
+            <div class="card-info" style="border-top-color: #444;">
+                 <div class="rarity-symbol ${rInfo.css}">${rInfo.symbol}</div>
+            </div>
+        `;
+        grid.appendChild(div);
+    });
+}
+
+// --- BOUTIQUE ET DOUBLONS ---
+
+function sellDuplicates() {
+    let earned = 0;
+    Object.keys(userCollection).forEach(set => {
+        Object.keys(userCollection[set]).forEach(id => {
+            const qty = userCollection[set][id];
+            if(qty > 1) {
+                const card = CARDS_DB[set].find(c => c.id === id);
+                if(card) {
+                    const rInfo = RARITY_DATA[card.rarity];
+                    const toSell = qty - 1;
+                    earned += toSell * (rInfo.sell || 0);
+                    userCollection[set][id] = 1; // On garde 1 exemplaire
+                }
+            }
+        });
+    });
+
+    if (earned > 0) {
+        userCurrency += earned;
+        alert(`Doublons vendus ! Tu as gagné ${earned} poussières.`);
+        saveData();
+        renderGlobalCollection(); // Rafraichir
+    } else {
+        alert("Aucun doublon à vendre.");
+    }
+}
+
+function renderShop() {
+    const grid = document.getElementById('shop-grid');
+    grid.innerHTML = '';
+
+    // Lister les cartes manquantes
+    let missingCards = [];
+    Object.keys(CARDS_DB).forEach(setName => {
+        CARDS_DB[setName].forEach(card => {
+            const qty = (userCollection[setName] && userCollection[setName][card.id]) || 0;
+            if (qty === 0) {
+                missingCards.push({ ...card, setName });
+            }
+        });
+    });
+
+    // Melanger ou Trier ? Affichons aléatoirement 50 cartes pour ne pas surcharger
+    missingCards.sort(() => 0.5 - Math.random());
+    const displayList = missingCards.slice(0, 50);
+
+    displayList.forEach(card => {
+        const rInfo = RARITY_DATA[card.rarity];
+        const cost = rInfo.cost || 9999;
+        
+        const div = document.createElement('div');
+        div.className = 'card-item shop-item missing'; // Missing pour l'effet grisé
+        div.style.opacity = "1"; // On force l'opacité pour la boutique
+        div.style.filter = "none";
+
+        div.onclick = () => buyCard(card, cost);
+
+        div.innerHTML = `
+            <img src="img/${card.setName}/${card.id}" style="filter: grayscale(100%);">
+            <div class="card-info">
+                 <div class="rarity-symbol ${rInfo.css}">${rInfo.symbol}</div>
+                 <div class="card-price"><i class="fas fa-gem"></i> ${cost}</div>
+            </div>
+        `;
+        grid.appendChild(div);
+    });
+    
+    if(displayList.length === 0) {
+        grid.innerHTML = '<p style="text-align:center; width:100%;">Tu as toutes les cartes ! Bravo !</p>';
+    }
+}
+
+function buyCard(card, cost) {
+    if(userCurrency >= cost) {
+        // DIRECTEMENT L'ACHAT (Plus de confirm)
+        userCurrency -= cost;
+        
+        if(!userCollection[card.setName]) userCollection[card.setName] = {};
+        userCollection[card.setName][card.id] = (userCollection[card.setName][card.id] || 0) + 1;
+        
+        saveData();
+        renderShop(); // La carte disparaitra instantanément de la liste
+        
+        // J'ai aussi commenté l'alerte de succès pour que ce soit 100% fluide. 
+        // Tu peux décommenter la ligne dessous si tu veux quand même un message "Carte acquise".
+        // alert("Carte acquise !"); 
+        
+    } else {
+        alert("Pas assez de poussière d'étoile !");
+    }
+}
+
+// --- OUVERTURE BOOSTER (LIVE UPDATE) ---
+let tempDrawnCards = [];
+
+function initBoosterOpening() {
+    const overlay = document.getElementById('booster-scene-overlay');
+    const packContainer = document.getElementById('pack-container');
+    const cardsContainer = document.getElementById('opened-cards-container');
+    const buttons = document.getElementById('scene-buttons');
+
+    // 1. On cache le paquet immédiatement
+    packContainer.style.display = 'none'; 
+    
+    // 2. On prépare le conteneur des cartes
+    cardsContainer.classList.remove('hidden');
+    buttons.classList.add('hidden');
+    
+    // 3. Tirage des cartes
+    tempDrawnCards = drawBoosterPack(); 
+    boosterOpenedCount++;
+    saveData();
+    
+    // Mise à jour de l'arrière-plan (collection)
     renderCards(currentFilter);
+
+    // 4. Affichage direct de l'overlay et des cartes
+    overlay.classList.remove('hidden');
+    prepareCardsForReveal();
+}
+
+function drawBoosterPack() {
+    const setCards = CARDS_DB[currentSet];
+    const drawn = [];
+    if(!userCollection[currentSet]) userCollection[currentSet] = {};
+
+    // 1. Grouper les cartes par rareté pour le tirage
+    const cardsByRarity = {};
+    setCards.forEach(card => {
+        if (!cardsByRarity[card.rarity]) cardsByRarity[card.rarity] = [];
+        cardsByRarity[card.rarity].push(card);
+    });
+
+    // 2. Déterminer si c'est un GOD PACK (0.05% de chance, soit 1/2000)
+    const isGodPack = Math.random() < 0.0005; 
+    
+    let slots = [];
+
+    if (isGodPack) {
+        console.log("GOD PACK TRIGGERED !"); // Petit log pour le plaisir
+        // 5 cartes très rares
+        slots = [
+            pickRarityFromTable(DROP_RATES_GOD_PACK),
+            pickRarityFromTable(DROP_RATES_GOD_PACK),
+            pickRarityFromTable(DROP_RATES_GOD_PACK),
+            pickRarityFromTable(DROP_RATES_GOD_PACK),
+            pickRarityFromTable(DROP_RATES_GOD_PACK)
+        ];
+    } else {
+        // Paquet Standard
+        slots = [
+            "1_diamond", // Carte 1 : Toujours commune
+            "1_diamond", // Carte 2 : Toujours commune
+            "1_diamond", // Carte 3 : Toujours commune
+            pickRarityFromTable(DROP_RATES_SLOT_4), // Carte 4 : Table Slot 4
+            pickRarityFromTable(DROP_RATES_SLOT_5)  // Carte 5 : Table Slot 5
+        ];
+    }
+
+    // 3. Remplir les slots avec des cartes réelles
+    slots.forEach(rarity => {
+        // On pioche la carte dans la DB correspondant à la rareté
+        const cardFromDb = pickRandom(cardsByRarity, rarity);
+        
+        // Gestion "NEW"
+        const currentQty = userCollection[currentSet][cardFromDb.id] || 0;
+        const isNew = currentQty === 0;
+
+        // Ajout collection
+        userCollection[currentSet][cardFromDb.id] = currentQty + 1;
+
+        // Ajout au tableau de résultat
+        drawn.push({
+            ...cardFromDb, 
+            isNew: isNew,
+            isGodPack: isGodPack // On peut utiliser ça plus tard pour un effet visuel spécial
+        });
+    });
+
+    return drawn;
+}
+
+function pickRarityFromTable(table) {
+    let total = table.reduce((acc, val) => acc + val.weight, 0);
+    let rand = Math.random() * total;
+    for (const entry of table) {
+        if (rand < entry.weight) return entry.rarity;
+        rand -= entry.weight;
+    }
+    return "1_diamond";
+}
+
+function pickRandom(map, rarity) {
+    const pool = map[rarity];
+    if (pool && pool.length > 0) return pool[Math.floor(Math.random() * pool.length)];
+    // Fallback simple
+    return { id: "1.png", rarity: "1_diamond" }; 
+}
+
+function prepareCardsForReveal() {
+    const container = document.getElementById('opened-cards-container');
+    container.innerHTML = ''; 
+
+    // On parcourt les cartes tirées
+    tempDrawnCards.forEach((cardObj) => {
+        const rarityInfo = RARITY_DATA[cardObj.rarity];
+        
+        // Gestion des auras
+        let glowClass = '';
+        if (rarityInfo.group === 'crown') glowClass = 'glow-crown';
+        else if (rarityInfo.group === 'chrom') glowClass = 'glow-chrom';
+        else if (rarityInfo.group === 'star') glowClass = 'glow-star';
+        else if (rarityInfo.group === 'diamond') glowClass = 'glow-diamond';
+
+        // Gestion du badge NEW
+        const newBadgeHTML = cardObj.isNew ? '<div class="new-badge">NEW</div>' : '';
+
+        const scene = document.createElement('div');
+        // MODIFICATION ICI : On ajoute 'is-flipped' tout de suite.
+        // La carte sera rendue directement face visible par le navigateur.
+        scene.className = `card-scene ${glowClass} is-flipped`;
+        
+        scene.innerHTML = `
+            <div class="card-object">
+                <div class="card-face face-back"></div>
+                <div class="card-face face-front">
+                    ${newBadgeHTML}
+                    <img src="img/${currentSet}/${cardObj.id}">
+                </div>
+            </div>
+        `;
+        container.appendChild(scene);
+    });
+
+    // On affiche les boutons "Terminer / Encore" IMMÉDIATEMENT
+    document.getElementById('scene-buttons').classList.remove('hidden');
+}
+
+function closeBoosterScene() {
+    document.getElementById('booster-scene-overlay').classList.add('hidden');
+    // Re-render pour être sûr
+    renderCards(currentFilter);
+}
+
+function replayBooster() {
+    initBoosterOpening();
 }
