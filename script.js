@@ -8,7 +8,9 @@ const DROP_RATES_SLOT_4 = [
     { rarity: "1_star",    weight: 2572 },
     { rarity: "2_star",    weight: 500 },
     { rarity: "3_star",    weight: 222 },
-    { rarity: "crown",     weight: 40 }
+    { rarity: "crown",     weight: 40 },
+    { rarity: "promo_a", weight: 300 },
+    { rarity: "promo_b", weight: 200 },
 ];
 
 const DROP_RATES_SLOT_5 = [
@@ -18,7 +20,9 @@ const DROP_RATES_SLOT_5 = [
     { rarity: "1_star",    weight: 10288 },
     { rarity: "2_star",    weight: 2000 },
     { rarity: "3_star",    weight: 888 },
-    { rarity: "crown",     weight: 160 }
+    { rarity: "crown",     weight: 160 },
+    { rarity: "promo_a", weight: 600 },
+    { rarity: "promo_b", weight: 400 },
 ];
 
 const RARITY_DATA = {
@@ -32,7 +36,9 @@ const RARITY_DATA = {
     "3_diamond":  { symbol: "♦♦♦", label: "Rare", rank: 3, css: "rarity-diamond", group: "diamond" },
     "2_diamond":  { symbol: "♦♦", label: "Peu Commune", rank: 2, css: "rarity-diamond", group: "diamond" },
     "1_diamond":  { symbol: "♦", label: "Commune", rank: 1, css: "rarity-common", group: "diamond" },
-    "promo":      { symbol: "P", label: "Promo", rank: 0, css: "rarity-common", group: "diamond" }
+    "promo":      { symbol: "P", label: "Promo", rank: 0, css: "rarity-common", group: "diamond" },
+    "promo_a": { symbol: "PA", label: "Promo A", rank: 0, css: "rarity-common", group: "promo" },
+    "promo_b": { symbol: "PB", label: "Promo B", rank: 0, css: "rarity-common", group: "promo" }
 };
 
 let boosterOpenedCount = parseInt(localStorage.getItem('tcg_pocket_booster_count')) || 0;
@@ -244,7 +250,19 @@ function pickRandomCardFromRarity(rarityTarget, cardsMap) {
         const pool = cardsMap[rarityTarget];
         return pool[Math.floor(Math.random() * pool.length)];
     }
-    const fallbackOrder = ["crown", "3_star", "2_star", "1_star", "4_diamond", "3_diamond", "2_diamond", "1_diamond"];
+    const fallbackOrder = [
+    "promo_a",
+    "promo_b",
+    "promo",
+    "crown",
+    "3_star",
+    "2_star",
+    "1_star",
+    "4_diamond",
+    "3_diamond",
+    "2_diamond",
+    "1_diamond"
+];
     let currentIndex = fallbackOrder.indexOf(rarityTarget);
     for(let i = currentIndex + 1; i < fallbackOrder.length; i++) {
         const nextRarity = fallbackOrder[i];
