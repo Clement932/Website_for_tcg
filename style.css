@@ -1,0 +1,455 @@
+:root {
+    --bg-color: #0f1014;
+    --card-bg: #1c1c24;
+    --accent: #3b82f6;
+    --danger: #ef4444;
+    --text: #ffffff;
+    --text-dim: #9ca3af;
+    
+    /* Définition des Couleurs de Rareté */
+    --col-diamond: #00e5ff; /* Cyan */
+    --col-star: #d500f9;    /* Violet */
+    --col-gold: #ffd700;    /* Or */
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text);
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding-bottom: 50px;
+}
+
+header {
+    padding: 15px 20px;
+    background: var(--card-bg);
+    border-bottom: 1px solid #333;
+    margin-bottom: 20px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header-content h1 { margin: 0; font-size: 1.5em; }
+
+.stats { display: flex; align-items: center; gap: 15px; }
+
+.reset-btn {
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+.reset-btn:hover { background: #dc2626; }
+
+/* Grilles et Cartes */
+.sets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.set-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s;
+    border: 1px solid #333;
+    cursor: pointer;
+}
+
+.set-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+
+.set-cover {
+    width: 100%;
+    height: 180px;
+    object-fit: contain;
+    background: #000;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.set-info { padding: 15px; }
+.set-name { font-weight: bold; display: block; margin-bottom: 5px;}
+
+.progress-container {
+    background: #333;
+    height: 6px;
+    border-radius: 3px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #ff0055, #ffcc00);
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
+.set-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8em;
+    color: var(--text-dim);
+}
+
+.hidden { display: none !important; }
+
+#set-detail-view { padding: 20px; max-width: 1200px; margin: 0 auto; }
+.detail-header { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; }
+
+.back-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 1.1em;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.view-toggles button {
+    background: #333;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-left: 5px;
+}
+.view-toggles button.active { background: var(--accent); }
+
+.action-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
+}
+
+.card-item {
+    border-radius: 8px;
+    overflow: hidden;
+    background: #222;
+    position: relative; 
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-item img { width: 100%; height: auto; aspect-ratio: 2.5/3.5; object-fit: cover; }
+.card-item:hover { transform: scale(1.05); z-index: 10; }
+.card-item.missing img { filter: grayscale(100%) brightness(20%); opacity: 0.5; }
+
+.card-number {
+    position: absolute;
+    top: 6px; right: 6px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.75em;
+    font-weight: bold;
+    font-family: monospace;
+    z-index: 5;
+    pointer-events: none;
+    backdrop-filter: blur(2px);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.card-info {
+    background-color: #252a33;
+    padding: 8px 5px;
+    text-align: center;
+    border-top: 1px solid #333;
+    flex-grow: 1;
+}
+
+/* Texte coloré dans la collection */
+.rarity-symbol { font-size: 1.2em; margin-bottom: 2px; line-height: 1; font-weight: bold; }
+.rarity-diamond { color: var(--col-diamond); text-shadow: 0 0 5px rgba(0, 229, 255, 0.3); }
+.rarity-star { color: var(--col-star); text-shadow: 0 0 8px rgba(213, 0, 249, 0.4); }
+.rarity-crown { color: var(--col-gold); text-shadow: 0 0 10px rgba(255, 215, 0, 0.6); }
+.rarity-chrom { 
+    background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rainbow-text 3s linear infinite;
+}
+@keyframes rainbow-text { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
+
+
+/* --- ANIMATION OUVERTURE BOOSTER & AURAS --- */
+
+/* ... (Garder tout le CSS du début inchangé jusqu'à #booster-scene-overlay) ... */
+
+/* --- Modification sur la partie Booster Scene --- */
+
+#booster-scene-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+}
+
+/* Phase 1: Le Booster */
+.pack-container {
+    /* cursor: pointer;  <-- SUPPRIMÉ */
+    position: relative;
+    transition: transform 0.2s;
+}
+/* .pack-container:hover { transform: scale(1.05); } <-- SUPPRIMÉ car pas d'interaction */
+
+.pack-image {
+    width: 280px;
+    filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
+    animation: floating 3s ease-in-out infinite;
+}
+
+@keyframes floating {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+    100% { transform: translateY(0px); }
+}
+
+/* La classe .tap-hint a été supprimée du HTML, on peut laisser le CSS ou l'enlever, ça ne change rien */
+
+/* ... (Garder tout le reste du CSS inchangé : animations, cartes 3D, etc.) ... */
+
+.tap-hint {
+    color: white;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1.2em;
+    animation: pulse 1.5s infinite;
+}
+
+.pack-shaking { animation: shake-hard 0.8s cubic-bezier(.36,.07,.19,.97) both; }
+.pack-flash { animation: flash-bang 0.5s ease-out forwards; }
+
+@keyframes shake-hard {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-3px, -2px) rotate(-1deg); }
+    20% { transform: translate(-6px, 0px) rotate(1deg); }
+    30% { transform: translate(6px, 2px) rotate(0deg); }
+    40% { transform: translate(3px, -1px) rotate(1deg); }
+    50% { transform: translate(-3px, 2px) rotate(-1deg); }
+    60% { transform: translate(-6px, 1px) rotate(0deg); }
+    70% { transform: translate(6px, 1px) rotate(-1deg); }
+    80% { transform: translate(-3px, -1px) rotate(1deg); }
+    90% { transform: translate(3px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+@keyframes flash-bang {
+    0% { opacity: 1; transform: scale(1); filter: brightness(1); }
+    50% { opacity: 1; transform: scale(1.5); filter: brightness(10); background: white;}
+    100% { opacity: 0; transform: scale(2); display: none; }
+}
+
+/* Phase 2: Les Cartes 3D */
+.opened-cards-container {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    perspective: 1000px;
+    width: 100%;
+}
+
+.card-scene {
+    width: 180px;
+    height: 252px;
+    cursor: pointer;
+    position: relative;
+    animation: deal-card 0.5s ease-out backwards;
+}
+.card-scene:nth-child(1) { animation-delay: 0.1s; }
+.card-scene:nth-child(2) { animation-delay: 0.2s; }
+.card-scene:nth-child(3) { animation-delay: 0.3s; }
+.card-scene:nth-child(4) { animation-delay: 0.4s; }
+.card-scene:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes deal-card {
+    from { opacity: 0; transform: translateY(100px) rotateX(45deg); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card-object {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+.card-scene.is-flipped .card-object { transform: rotateY(180deg); }
+
+.card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 10px;
+    background: #000;
+}
+
+.face-back {
+    background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #5c6bc0;
+    /* Transition douce pour l'aura */
+    transition: box-shadow 0.3s ease; 
+}
+.face-back::after {
+    content: "TCG";
+    color: rgba(255,255,255,0.1);
+    font-size: 2em;
+    font-weight: bold;
+    transform: rotate(-45deg);
+}
+
+.face-front { transform: rotateY(180deg); }
+.face-front img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+
+/* --- LES 4 AURAS PAR GROUPE DE RARETÉ --- */
+
+/* 1. DIAMONDS (♦) -> Aura Cyan */
+.glow-diamond { 
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.5); 
+    border: 1px solid var(--col-diamond); 
+}
+/* Animation subtile pour les diamonds */
+.glow-diamond:hover {
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.8);
+}
+
+/* 2. STARS (★) -> Aura Violette */
+.glow-star { 
+    box-shadow: 0 0 20px rgba(213, 0, 249, 0.6); 
+    border: 1px solid var(--col-star); 
+    animation: star-pulse 2s infinite alternate;
+}
+
+/* 3. CHROM (✨) -> Aura Arc-en-ciel */
+.glow-chrom { 
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.5); 
+    border: 2px solid transparent;
+    /* Astuce pour bordure dégradée */
+    background-image: linear-gradient(#1a237e, #283593), linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet); 
+    background-origin: border-box; 
+    background-clip: content-box, border-box;
+    animation: chrom-rotate 3s linear infinite;
+}
+
+/* 4. CROWN (♛) -> Aura Or Intense */
+.glow-crown { 
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.8); 
+    border: 2px solid var(--col-gold); 
+    animation: gold-pulse 0.8s infinite alternate;
+    z-index: 5; /* Passe au dessus des autres */
+}
+
+@keyframes star-pulse { from { box-shadow: 0 0 15px var(--col-star); } to { box-shadow: 0 0 30px var(--col-star); } }
+@keyframes gold-pulse { from { box-shadow: 0 0 20px rgba(234, 179, 8, 0.6); } to { box-shadow: 0 0 60px rgba(234, 179, 8, 1); } }
+@keyframes chrom-rotate { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
+
+/* Boutons */
+.scene-buttons { margin-top: 30px; display: flex; gap: 20px; animation: fade-in 1s ease-in; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.action-btn.secondary { background-color: #4b5563; }
+
+#stats-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    background-color: #222;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    border-radius: 12px;
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-width: 200px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+}
+.stat-card:hover { transform: translateY(-2px); }
+.booster-card { background: linear-gradient(135deg, #0052d4, #4364f7, #6fb1fc); border: 2px solid #4364f7; }
+.collection-card { background: linear-gradient(135deg, #f09819, #edde5d); border: 2px solid #f09819; color: #333; }
+.stat-icon { font-size: 2rem; margin-right: 15px; }
+.stat-info { display: flex; flex-direction: column; }
+.stat-label { font-size: 0.8rem; text-transform: uppercase; opacity: 0.9; font-weight: bold; }
+.stat-value { font-size: 1.5rem; font-weight: 800; }
+.stat-total { font-size: 1rem; opacity: 0.8; }
+
+/* On s'assure que la scène laisse déborder l'aura */
+.card-scene {
+    width: 180px;
+    height: 252px;
+    position: relative;
+    border-radius: 10px; /* Pour correspondre à la carte */
+    transition: box-shadow 0.3s ease;
+}
+
+/* On déplace les effets de lueur de .face-back vers .card-scene */
+.glow-diamond { box-shadow: 0 0 15px rgba(0, 229, 255, 0.6); }
+.glow-star { 
+    box-shadow: 0 0 25px rgba(213, 0, 249, 0.7); 
+    animation: star-pulse 2s infinite alternate;
+}
+.glow-chrom { 
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.6); 
+    animation: chrom-rotate 3s linear infinite;
+    border: 2px solid rgba(255,255,255,0.2); /* Optionnel : bordure fine */
+}
+.glow-crown { 
+    box-shadow: 0 0 45px rgba(255, 215, 0, 0.9); 
+    animation: gold-pulse 0.8s infinite alternate;
+}
+
+/* Important : Retirer le overflow:hidden sur .card-scene s'il existe 
+   pour que l'aura ne soit pas coupée */

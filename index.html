@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCG Pocket Collection</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="stats-container">
+        <div class="stat-card booster-card">
+            <div class="stat-icon">📦</div>
+            <div class="stat-info">
+                <span class="stat-label">Boosters Ouverts</span>
+                <span class="stat-value" id="booster-count">0</span>
+            </div>
+        </div>
+        <div class="stat-card collection-card">
+            <div class="stat-icon">🃏</div>
+            <div class="stat-info">
+                <span class="stat-label">Collection Totale</span>
+                <div class="stat-value-group">
+                    <span class="stat-value" id="collection-count">0</span>
+                    <span class="stat-separator">/</span>
+                    <span class="stat-total" id="total-cards-count">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <header>
+        <div class="header-content">
+            <h1>Mes Extensions</h1>
+            <div class="stats">
+                <span>Total Cartes: <b id="total-collected">0</b></span>
+                <button onclick="resetCollection()" class="reset-btn" title="Tout effacer">
+                    <i class="fas fa-trash"></i> Reset
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div id="sets-container" class="sets-grid"></div>
+
+        <div id="set-detail-view" class="hidden">
+            <div class="detail-header">
+                <button class="back-btn" onclick="goHome()"><i class="fas fa-arrow-left"></i> Retour</button>
+                <h2 id="current-set-title">Nom de l'extension</h2>
+            </div>
+            
+            <div class="actions">
+                <button class="action-btn open" onclick="initBoosterOpening()">
+                    <i class="fas fa-bolt"></i> Ouvrir Booster
+                </button>
+                <div class="view-toggles">
+                    <button onclick="filterView('all')" class="active">Tout</button>
+                    <button onclick="filterView('owned')">Possédées</button>
+                    <button onclick="filterView('missing')">Manquantes</button>
+                </div>
+            </div>
+
+            <div id="cards-grid" class="cards-grid"></div>
+        </div>
+
+        <div id="booster-scene-overlay" class="hidden">
+            
+            <div id="pack-container" class="pack-container">
+                <div class="glow-effect"></div>
+                <img id="pack-visual" src="" class="pack-image">
+                </div>
+
+            <div id="opened-cards-container" class="opened-cards-container hidden"></div>
+
+            <div id="scene-buttons" class="scene-buttons hidden">
+                <button class="action-btn secondary" onclick="closeBoosterScene()">Terminer</button>
+                <button class="action-btn" onclick="replayBooster()">
+                    <i class="fas fa-redo"></i> Encore !
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="cards_data_updated.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
