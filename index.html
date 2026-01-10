@@ -3,25 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TCG Pocket Collection</title>
+    <title>TCG Pocket Simulator - Deluxe</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body>
     
     <nav class="main-nav">
-        <div class="nav-logo">TCG POCKET</div>
+        <div class="nav-logo">TCG POCKET <span style="font-size:0.6em; color:var(--accent); vertical-align: super;">BETA</span></div>
         <div class="nav-links">
             <button onclick="goHome()" class="nav-btn active"><i class="fas fa-layer-group"></i> Extensions</button>
-            <button onclick="openGlobalCollection()" class="nav-btn"><i class="fas fa-globe"></i> Collection Totale</button>
+            <button onclick="openGlobalCollection()" class="nav-btn"><i class="fas fa-globe"></i> Collection</button>
             <button onclick="openShop()" class="nav-btn"><i class="fas fa-store"></i> Boutique</button>
+            <button onclick="openMissions()" class="nav-btn mission-btn-pulse"><i class="fas fa-clipboard-list"></i> Missions</button>
         </div>
-        <div class="nav-currency" title="Poussière d'étoile (Vends tes doublons !)">
+        <div class="nav-currency" title="Poussière d'étoile">
             <i class="fas fa-gem"></i> <span id="currency-display">0</span>
         </div>
     </nav>
 
     <div class="dashboard-stats">
+        <div class="stat-item xp-container">
+            <div class="level-badge">NIV <span id="user-level">1</span></div>
+            <div class="xp-bar-wrapper">
+                <div class="xp-text"><span id="current-xp">0</span> / <span id="next-level-xp">100</span> XP</div>
+                <div class="xp-bar-bg"><div id="xp-bar-fill" class="xp-bar-fill"></div></div>
+            </div>
+        </div>
+
         <div class="stat-item">
             <i class="fas fa-box-open"></i>
             <div class="stat-text">
@@ -39,9 +51,7 @@
             </div>
         </div>
         <div class="stat-actions">
-            <button onclick="resetCollection()" class="reset-btn" title="Tout effacer">
-                <i class="fas fa-trash"></i> Reset
-            </button>
+            <button onclick="resetCollection()" class="reset-btn" title="Tout effacer"><i class="fas fa-trash"></i></button>
         </div>
     </div>
 
@@ -51,28 +61,33 @@
         <div id="set-detail-view" class="hidden view-section">
             <div class="detail-header">
                 <button class="back-btn" onclick="goHome()"><i class="fas fa-arrow-left"></i> Retour</button>
-                <h2 id="current-set-title">Nom de l'extension</h2>
+                <div class="header-info">
+                    <h2 id="current-set-title">Nom de l'extension</h2>
+                    <div id="set-header-stats-container"></div>
+                </div>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-set" placeholder="N°..." oninput="searchCards(this.value, 'cards-grid')">
+                </div>
             </div>
 
             <div class="set-content-wrapper">
-                
                 <aside class="set-sidebar">
-                    <h3 style="margin-top:0; font-size:1.1em;">Raretés du Set</h3>
-                    <ul id="dynamic-legend" class="legend-list">
-                        </ul>
-                </aside>
-
-                <div class="set-main-area">
-                    <div class="actions">
-                        <button class="action-btn open" onclick="initBoosterOpening()">
-                            <i class="fas fa-bolt"></i> Ouvrir Booster
+                    <div class="sidebar-sticky">
+                        <button class="action-btn open-booster-btn" onclick="initBoosterOpening()">
+                            <i class="fas fa-bolt"></i> OUVRIR BOOSTER
                         </button>
-                        <div class="view-toggles">
-                            <button onclick="filterView('all')" class="active filter-btn" data-filter="all">Tout</button>
-                            <button onclick="filterView('owned')" class="filter-btn" data-filter="owned">Possédées</button>
+                        <hr style="border: 0; border-top: 1px solid #333; margin: 15px 0;">
+                        <div class="view-toggles-vertical">
+                            <button onclick="filterView('all')" class="active filter-btn" data-filter="all">Tout voir</button>
+                            <button onclick="filterView('owned')" class="filter-btn" data-filter="owned">Mes Cartes</button>
                             <button onclick="filterView('missing')" class="filter-btn" data-filter="missing">Manquantes</button>
                         </div>
+                        <h4 style="margin: 15px 0 10px 0; font-size: 0.9em; color: #888; text-transform: uppercase;">Légende</h4>
+                        <ul id="dynamic-legend" class="legend-list"></ul>
                     </div>
+                </aside>
+                <div class="set-main-area">
                     <div id="cards-grid" class="cards-grid"></div>
                 </div>
             </div>
@@ -80,29 +95,50 @@
 
         <div id="global-collection-view" class="hidden view-section">
             <div class="detail-header">
-                <h2>Collection Globale (Triée par Rareté)</h2>
-                <button class="action-btn secondary" onclick="sellDuplicates()">
-                    <i class="fas fa-coins"></i> Vendre les doublons (+<span id="sell-preview">0</span>)
-                </button>
+                <h2>Collection Globale</h2>
+                <div class="header-actions">
+                    <button class="action-btn secondary" onclick="sellDuplicates()">
+                        <i class="fas fa-coins"></i> Vendre doublons (+<span id="sell-preview">0</span>)
+                    </button>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-global" placeholder="N°..." oninput="searchCards(this.value, 'global-grid')">
+                    </div>
+                </div>
             </div>
             <div id="global-grid" class="cards-grid"></div>
         </div>
 
         <div id="shop-view" class="hidden view-section">
             <div class="detail-header">
-                <h2>Boutique de Cartes</h2>
-                <p>Utilise ta poussière d'étoile pour créer les cartes manquantes.</p>
+                <h2>Boutique Échange</h2>
+                <p style="color:var(--text-dim)">Fabriquez les cartes qu'il vous manque.</p>
             </div>
             <div id="shop-grid" class="cards-grid"></div>
         </div>
 
+        <div id="missions-modal" class="hidden modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-clipboard-list"></i> Missions & Succès</h2>
+                    <button class="close-modal-btn" onclick="closeMissions()"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="modal-tabs">
+                    <button class="tab-btn active" onclick="switchMissionTab('daily')">Quotidiennes</button>
+                    <button class="tab-btn" onclick="switchMissionTab('achievements')">Succès</button>
+                </div>
+                <div id="missions-list" class="missions-list">
+                    </div>
+            </div>
+        </div>
+
         <div id="booster-scene-overlay" class="hidden">
+            <div id="confetti-container"></div> 
             <div id="pack-container" class="pack-container">
-                <div class="glow-effect"></div>
-                <img id="pack-visual" src="" class="pack-image"> </div>
-
+                <img id="pack-visual" src="" class="pack-image">
+                <div class="tap-hint">Touchez pour ouvrir</div>
+            </div>
             <div id="opened-cards-container" class="opened-cards-container hidden"></div>
-
             <div id="scene-buttons" class="scene-buttons hidden">
                 <button class="action-btn secondary" onclick="closeBoosterScene()">Terminer</button>
                 <button class="action-btn" onclick="replayBooster()">
@@ -113,7 +149,7 @@
 
     </main>
 
-    <script src="cards_data_updated.js"></script>
+    <script src="cards_data_final.js"></script> 
     <script src="script.js"></script>
 </body>
 </html>
