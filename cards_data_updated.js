@@ -4046,11 +4046,11 @@ const CARDS_DB = {
         },
         {
             "id": "218.png",
-            "rarity": "1_star"
+            "rarity": "1_chrom"
         },
         {
             "id": "219.png",
-            "rarity": "1_star"
+            "rarity": "1_chrom"
         },
         {
             "id": "220.png",
@@ -4106,7 +4106,7 @@ const CARDS_DB = {
         },
         {
             "id": "233.png",
-            "rarity": "1_star"
+            "rarity": "2_chrom"
         },
         {
             "id": "234.png",
@@ -6820,7 +6820,7 @@ const CARDS_DB = {
         },
         {
             "id": "50.png",
-            "rarity": "crown"
+            "rarity": "promo"
         },
         {
             "id": "51.png",
@@ -7588,7 +7588,7 @@ const CARDS_DB = {
         },
         {
             "id": "100.png",
-            "rarity": "1_diamond"
+            "rarity": "2_diamond"
         },
         {
             "id": "101.png",
@@ -8342,11 +8342,11 @@ const CARDS_DB = {
         },
         {
             "id": "2.png",
-            "rarity": "1_chrom"
+            "rarity": "2_diamond"
         },
         {
             "id": "3.png",
-            "rarity": "1_chrom"
+            "rarity": "4_diamond"
         },
         {
             "id": "4.png",
@@ -8734,7 +8734,7 @@ const CARDS_DB = {
         },
         {
             "id": "100.png",
-            "rarity": "1_diamond"
+            "rarity": "1_chrom"
         },
         {
             "id": "101.png",
@@ -10146,7 +10146,7 @@ const CARDS_DB = {
         },
         {
             "id": "100.png",
-            "rarity": "1_diamond"
+            "rarity": "1_chrom"
         },
         {
             "id": "101.png",
